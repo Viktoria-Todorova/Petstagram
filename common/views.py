@@ -1,10 +1,10 @@
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect, resolve_url
+from django.shortcuts import  redirect, resolve_url
 from django.views.generic import ListView
 from pyperclip import copy
 
-from common.forms import CommentForm, SearchForm
-from common.models import Like, Comment
+from common.forms import CommentForm
+from common.models import Like
 from photos.models import Photo
 
 
@@ -38,12 +38,14 @@ class HomePageView(ListView):
 
 def like_functionality(request: HttpRequest,photo_pk:int) -> HttpResponse:
 
-    like_object = Like.objects.filter(to_photo_id=photo_pk).first()
+    like_object = Like.objects.filter(to_photo_id=photo_pk,
+                                      user=request.user).first() #see if that spesific user has liked it
 
     if like_object:
         like_object.delete()
     else:
-        Like.objects.create(to_photo_id=photo_pk)
+        Like.objects.create(to_photo_id=photo_pk,
+                            user=request.user,) #so it matches the user
     return redirect(request.META.get('HTTP_REFERER')+ f'#{photo_pk}')
 
 def add_comment(request: HttpRequest,photo_pk:int) -> HttpResponse:
@@ -54,6 +56,7 @@ def add_comment(request: HttpRequest,photo_pk:int) -> HttpResponse:
         if form.is_valid():
             comment =form.save(commit=False)
             comment.to_photo = photo
+            comment.user = request.user #so it matches the user
             comment.save()
         return redirect(request.META.get('HTTP_REFERER')+ f'#{photo_pk}')
 

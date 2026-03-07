@@ -1,10 +1,10 @@
+
 from django.db.models import Prefetch
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import  reverse
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from pets.forms import PetForm
+from pets.mixin import CheckUserIsOwner
 from pets.models import Pet
 from photos.models import Photo
 
@@ -16,7 +16,15 @@ class PetAddView(CreateView):
     model = Pet
     form_class =PetForm
     template_name = 'pets/pet-add-page.html'
-    success_url = reverse_lazy('accounts:details',kwargs = {"pk":1} ) #todo to make it dynamic
+
+
+    def get_success_url(self):
+        return reverse('accounts:details',kwargs={"pk":self.object.user.pk} )
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
 
 class PetDetailView(DetailView):
     queryset = Pet.objects.prefetch_related(
@@ -51,11 +59,13 @@ class PetDetailView(DetailView):
 #     }
 #     return render(request,'pets/pet-details-page.html',context)
 
-class PetEditView(UpdateView):
+class PetEditView(CheckUserIsOwner,UpdateView):
     model = Pet
     form_class =PetForm
     slug_url_kwarg = 'pet_slug'
     template_name = 'pets/pet-edit-page.html'
+
+
     def get_success_url(self):
         return reverse('pets:details',kwargs={ "username": 'username', "pet_slug":self.object.slug})
 # def pet_edit(request: HttpRequest,username:str,pet_slug:str) -> HttpResponse:
@@ -75,7 +85,10 @@ class PetDeleteView(DeleteView):
     model = Pet
     form_class =PetForm
     template_name = 'pets/pet-delete-page.html'
-    success_url = reverse_lazy('accounts:details',kwargs={"pk":1})
+
+    def get_success_url(self):
+        return reverse('accounts:details', kwargs={"pk": self.object.user.pk})
+
 
     def get_initial(self): #rewrites only the needed
         return self.object.__dict__

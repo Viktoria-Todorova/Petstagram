@@ -47,7 +47,7 @@ PROJECT_APPS =[
 # Application definition
 
 INSTALLED_APPS = [
-    'unfold',
+    "unfold",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -142,3 +142,16 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
+AUTH_USER_MODEL = 'accounts.AppUser'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mailjet.com'
+EMAIL_HOST_USER=os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASS=os.getenv('EMAIL_HOST_PASS')
+EMAIL_PORT=587
+COMPANY_EMAIL=os.getenv('COMPANY_EMAIL')
+
+LOGIN_REDIRECT_URL='common:home'
+LOGOUT_REDIRECT_URL='accounts:login'
+LOGIN_URL='accounts:login'
