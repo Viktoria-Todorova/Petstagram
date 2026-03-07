@@ -3,7 +3,7 @@
     <div class="top">
         <!-- User Details and image location -->
         <div class="userDetails">
-            <a href="{% url 'accounts:details' request.user.pk %}">
+            <a href="{% url 'accounts:details' photo.user.pk %}">
                 <div class="profilepic">
                     <div class="profile_img">
                         <div class="image">
@@ -13,11 +13,12 @@
                 </div>
             </a>
             <h3>
-                <a href="{% url 'accounts:details' request.user.pk %}">
-                    <!-- if user has first name and last name -->
-                    {{ request.user.profile.get_full_name }}
-                    <!-- else -->
-                    <!-- user username -->
+                <a href="{% url 'accounts:details' photo.user.pk %}">
+                    {% if photo.user.profile.get_full_name %}
+                        {{ photo.user.profile.get_full_name }}
+                    {% else %}
+                        {{ photo.user.email }}
+                    {% endif %}
                 </a>
                 <br>
                 <!-- if the photo has location -->
@@ -102,7 +103,13 @@
                             <p>
                                 <!-- Link to User Profile Details Page-->
                                 <!-- User First and/or Last Name or username-->
-                                <a href="">{{ request.user.profile.get_full_name }}</a>
+                                <a href="{% url 'accounts:details' comment.user.pk %}">
+                                    {% if comment.user.profile.get_full_name %}
+                                        {{ comment.user.profile.get_full_name }}
+                                    {% else %}
+                                        {{ comment.user.email }}
+                                    {% endif %}
+                                </a>
                                 <!-- User Comment -->
                                 - {{ comment.text }}
                             </p>

@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Sum
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
 
 from accounts.forms import AppUserCreateForm, ProfileForm
@@ -12,13 +12,13 @@ from pets.mixin import CheckUserIsOwner
 
 UserModel = get_user_model()
 # Create your views here.
-def register(request: HttpRequest) -> HttpResponse:
-    return render(request, 'accounts/register-page.html')
+# def register(request: HttpRequest) -> HttpResponse:
+#     return render(request, 'accounts/register-page.html')
 class RegisterAppUserView(CreateView):
     model = UserModel
     form_class = AppUserCreateForm
     template_name = 'accounts/register-page.html'
-    success_url = reverse_lazy('common:home')
+    success_url = reverse_lazy('accounts:login')
 def login(request: HttpRequest) -> HttpResponse:
     return render(request, 'accounts/login-page.html')
 
