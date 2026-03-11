@@ -26,18 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY=os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG') #1
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    'lizabeth-grilla-kittie.ngrok-free'] #we never do it in production
+ALLOWED_HOSTS = [host for host in os.getenv('ALLOWED_HOSTS').split(',') if host] #2
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1',
-    'http://localhost',
-    'https://lizabeth-grilla-kittie.ngrok-free'
-]
+CSRF_TRUSTED_ORIGINS = [host for host in os.getenv('CSRF_TRUSTED_ORIGINS').split(',') if host] #3
+
 PROJECT_APPS =[
     'accounts',
     'common',
@@ -59,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -140,6 +135,13 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STORAGES = {
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
+
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
